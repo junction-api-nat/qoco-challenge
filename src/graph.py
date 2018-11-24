@@ -37,11 +37,7 @@ def draw_graph(g):
 
 
 if __name__ == "__main__":
-    try:
-        import api.client
-    except (ValueError, ModuleNotFoundError):
-        print("Run this test from the project root folder like so: 'python -m src.graph'")
-        exit(1)
+    import api.client
 
     g = create_graph(api.client.get_all_stations(),
                      api.client.get_all_transports())
