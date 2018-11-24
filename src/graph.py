@@ -1,19 +1,15 @@
 from datetime import datetime
 import networkx
 
-from api.client import get_all_transports
 
-
-def create_nodes_from_stations(stations_json):
-    G = networkx.Graph()
+def add_nodes_as_stations(g, stations_json):
     for station, station_data in stations_json.items():
         location = station_data['location']
         pos = (int(location['latitude']), int(location['longitude']))
-        G.add_node(station, pos=pos)
-    return G
+        g.add_node(station, pos=pos)
 
 
-def get_graph_with_edges(g, transports):
+def add_transports_as_edges(g, transports):
     now = datetime.now()
     for transport in transports:
         dep_station = transport['dep_station']
@@ -22,7 +18,6 @@ def get_graph_with_edges(g, transports):
         deltatime_seconds = (estimated_arr_datetime - now).total_seconds()
         deltatime_hours = deltatime_seconds // 3600
         g.add_edge(dep_station, arr_station, weight=deltatime_hours)
-    return g
 
 
 if __name__ == "__main__":
@@ -31,13 +26,15 @@ if __name__ == "__main__":
     except (ValueError, ModuleNotFoundError):
         print("Run this test from the project root folder like so: 'python -m src.graph'")
         exit(1)
+
+    g = networkx.DiGraph()
+
     stations_json = api.client.get_all_stations()
-    create_nodes_from_stations(stations_json)
+    add_nodes_as_stations(g, stations_json)
 
-    g = create_nodes_from_stations(stations_json)
 
-    transports = get_all_transports()['transports']
-    g = get_graph_with_edges(g, transports)
+    transports = api.client.get_all_transports()['transports']
+    add_transports_as_edges(g, transports)
 
     # Draw
     import matplotlib.pyplot as plt
