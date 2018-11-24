@@ -24,7 +24,7 @@ def get_all_stations():
 
 
 def get_all_transports():
-    r = requests.get("%s/bookings" % (api_baseurl,), headers=headers)
+    r = requests.get("%s/transports" % (api_baseurl,), headers=headers)
     r.raise_for_status()
     return r.json()
 
