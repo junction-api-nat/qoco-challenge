@@ -47,4 +47,5 @@ if __name__ == "__main__":
     elif command == "transports":
         ret = get_all_transports()
 
-    print(ret)
+    import json
+    print(json.dumps(ret, indent=4))
