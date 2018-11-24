@@ -1,5 +1,5 @@
 from api import client
-import mongo
+from src import mongo
 import json
 
 mongo.postBookings(client.get_all_bookings())
