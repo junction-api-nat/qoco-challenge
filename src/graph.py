@@ -20,6 +20,22 @@ def add_transports_as_edges(g, transports):
         g.add_edge(dep_station, arr_station, weight=deltatime_hours)
 
 
+def create_graph(stations_json, transports_json):
+    g = networkx.DiGraph()
+    add_nodes_as_stations(g, stations_json)
+    add_transports_as_edges(g, transports_json['transports'])
+    return g
+
+
+def draw_graph(g):
+    import matplotlib.pyplot as plt
+    pos = networkx.get_node_attributes(g, 'pos')
+    networkx.draw(g, pos, with_labels=True)
+    labels = networkx.get_edge_attributes(g, 'weight')
+    networkx.draw_networkx_edge_labels(g, pos=pos, edge_labels=labels)
+    plt.show()
+
+
 if __name__ == "__main__":
     try:
         import api.client
@@ -27,19 +43,6 @@ if __name__ == "__main__":
         print("Run this test from the project root folder like so: 'python -m src.graph'")
         exit(1)
 
-    g = networkx.DiGraph()
-
-    stations_json = api.client.get_all_stations()
-    add_nodes_as_stations(g, stations_json)
-
-
-    transports = api.client.get_all_transports()['transports']
-    add_transports_as_edges(g, transports)
-
-    # Draw
-    import matplotlib.pyplot as plt
-    pos = networkx.get_node_attributes(g, 'pos')
-    networkx.draw(g, pos, with_labels=True)
-    labels = networkx.get_edge_attributes(g, 'weight')
-    networkx.draw_networkx_edge_labels(g, pos=pos, edge_labels=labels)
-    plt.show()
+    g = create_graph(api.client.get_all_stations(),
+                     api.client.get_all_transports())
+    draw_graph(g)
