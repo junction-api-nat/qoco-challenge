@@ -38,5 +38,9 @@ def handle_data():
     return changed_data
 
 
+def get_station_by_distrupted_transport(transport_number):
+    return mongo.getTransport(transport_number)['dep_station']
+
+
 if __name__ == '__main__':
     handle_data()
