@@ -1,4 +1,5 @@
 import pymongo
+import datetime
 from pymongo import MongoClient
 import os
 
@@ -15,6 +16,15 @@ db.authenticate(DB_USER, DB_PASS)
 # Bookings
 def getAllBookings():
   return db.bookings.find({})
+
+def getBooking(booking_id):
+  return db.bookings.find_one({"booking_id": booking_id})
+
+def getPriorityBookings():
+  return list(db.bookings.find({"high_priority": True}))
+
+def getNonPriorityBookings():
+  return list(db.bookings.find({"high_priority": False}))    
 
 def postBookings(bookings):
   db.bookings.insert_many(bookings)
@@ -42,8 +52,30 @@ def updateStation(station):
 def getAllTransports():
   return db.transports.find({})
 
-def postTransport(transport):
-  return db.transports.insert_one(transport)
+def getTransport(transport_number):
+  return db.transports.find({"transport_number": transport_number})
+
+def getBookingsForTransport(transport_number):
+  return db.transports.find_one({"transport_number": transport_number})["bookings"]
+
+def getRemainingTransportCapacity(transport):
+  bookings = getBookingsForTransport(transport.transport_number)
+  bookings_capacity = {
+    total_weight: 0,
+    total_volume: 0
+  }
+  for booking_id in bookings:
+    booking = getBooking(booking_id)
+    bookings_capacity.total_weight += booking.total_weight
+    bookings_capacity.total_volume += booking.total_volume
+
+  return {
+    weight: transport.capacity_weight - bookings_capacity.total_weight,
+    volume: transport.capacity_volume - bookings_capacity.total_volume
+  }
+
+def postTransports(transports):
+  return db.transports.insert_many(transports)
 
 def postTransport(transport):
   return db.transports.insert_one(transport)
