@@ -21,7 +21,7 @@ def add_transports_as_edges(g, transports):
 
 
 def create_graph(stations_json, transports_json):
-    g = networkx.DiGraph()
+    g = networkx.MultiDiGraph()
     add_nodes_as_stations(g, stations_json)
     add_transports_as_edges(g, transports_json['transports'])
     return g
@@ -45,4 +45,4 @@ if __name__ == "__main__":
 
     g = create_graph(api.client.get_all_stations(),
                      api.client.get_all_transports())
-    draw_graph(g)
+    draw_graph(networkx.DiGraph(g))
