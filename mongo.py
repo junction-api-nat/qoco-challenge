@@ -15,8 +15,17 @@ db.authenticate(DB_USER, DB_PASS)
 def getAllBookings():
   return db.bookings.find({})
 
+def postBooking(booking):
+  db.booking.insertOne(booking)
+
 def getAllStations():
   return db.stations.find({})
 
-def getAllBookings():
-  return db.transports.find({})  
+def postStation(station):
+  db.stations.insertOne(station)
+
+def getAllTransports():
+  return db.transports.find({})
+
+def postTransport(transport):
+  return db.transports.insertOne(transport)
